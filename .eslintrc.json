@@ -1,0 +1,15 @@
+{
+  "extends": "standard",
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "rules": {
+    "indent": "off",
+    "no-tabs": "off",
+    "padded-blocks": "off",
+    "operator-linebreak": "off",
+    "no-magic-numbers": ["warn", { "ignore": [0, 1] }],
+    "prefer-promise-reject-errors": "error"
+  }
+}
