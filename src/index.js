@@ -23,7 +23,7 @@ function createCustomer (data, movies) {
 	}
 
 	function rentals () {
-		return data.rentals.map(r => createRental(r, movies))
+		return data.rentals.map(createRental(movies))
 	}
 
 	function frequentRenterPoints () {
@@ -39,7 +39,7 @@ function createCustomer (data, movies) {
 	}
 }
 
-function createRental (data, movies) {
+const createRental = movies => data => {
 	return {
 		days: () => data.days,
 		movieID: () => data.movieID,
