@@ -3,51 +3,53 @@ module.exports = function statement (customer, movies) {
 
 	let result = `Rental Record for ${customer.name}\n`
 	for (let r of customer.rentals) {
-		result += `\t${movieFor(r).title}\t${amountFor(r)}\n`
+		result += `\t${movieFor(r, movies).title}\t${amountFor(r, movies)}\n`
 	}
 
-	result += `Amount owed is ${totalAmount()}\n`
-	result += `You earned ${totalFrequentRenterPoints()} frequent renter points\n`
+	result += `Amount owed is ${totalAmount(customer, movies)}\n`
+	result += `You earned ${totalFrequentRenterPoints(customer, movies)} frequent renter points\n`
 
 	return result
+}
 
-	function movieFor (rental) {
-		return movies[rental.movieID]
+function movieFor (rental, movies) {
+	return movies[rental.movieID]
+}
+
+function amountFor (rental, movies) {
+	let result = 0
+	switch (movieFor(rental, movies).code) {
+		case 'regular':
+			result = 2
+			if (rental.days > 2) {
+				result += (rental.days - 2) * 1.5
+			}
+			return result
+		case 'new':
+			result = rental.days * 3
+			return result
+		case 'childrens':
+			result = 1.5
+			if (rental.days > 3) {
+				result += (rental.days - 3) * 1.5
+			}
+			return result
+	}
+	return result
+}
+
+function totalFrequentRenterPoints (customer, movies) {
+	return customer.rentals
+		.map((r) => frequentRenterPointsFor(r, movies))
+		.reduce((a, b) => a + b, 0)
+
+	function frequentRenterPointsFor (rental, movies) {
+		return (movieFor(rental, movies).code === 'new' && rental.days > 2) ? 2 : 1
 	}
 
-	function amountFor (rental) {
-		let amount = 0
-		switch (movieFor(rental).code) {
-			case 'regular':
-				amount = 2
-				if (rental.days > 2) {
-					amount += (rental.days - 2) * 1.5
-				}
-				return amount
-			case 'new':
-				return rental.days * 3
-			case 'childrens':
-				amount = 1.5
-				if (rental.days > 3) {
-					amount += (rental.days - 3) * 1.5
-				}
-				return amount
-		}
-		return amount
-	}
+}
 
-	function totalAmount () {
-		return customer.rentals
-			.reduce((total, r) => total + amountFor(r), 0)
-	}
-
-	function totalFrequentRenterPoints () {
-		return customer.rentals
-			.map(frequentRenterPointsFor)
-			.reduce((a, b) => a + b, 0)
-
-		function frequentRenterPointsFor (rental) {
-			return (movieFor(rental).code === 'new' && rental.days > 2) ? 2 : 1
-		}
-	}
+function totalAmount (customer, movies) {
+	return customer.rentals
+		.reduce((total, r) => total + amountFor(r, movies), 0)
 }
