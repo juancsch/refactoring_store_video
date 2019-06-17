@@ -1,15 +1,40 @@
 
-module.exports = function statement (customer, movies) {
+module.exports = function statement (customer, movies, format = 'text') {
 
-	let result = `Rental Record for ${customer.name}\n`
-	for (let r of customer.rentals) {
-		result += `\t${movieFor(r).title}\t${amountFor(r)}\n`
+	switch (format) {
+		case 'text':
+			return textStatement()
+		case 'html':
+			return htmlStatement()
+	}
+	throw new Error(`unknown statement format ${format}`)
+
+	function textStatement () {
+
+		let result = `Rental Record for ${customer.name}\n`
+		for (let r of customer.rentals) {
+			result += `\t${movieFor(r).title}\t${amountFor(r)}\n`
+		}
+
+		result += `Amount owed is ${totalAmount()}\n`
+		result += `You earned ${totalFrequentRenterPoints()} frequent renter points\n`
+		return result
 	}
 
-	result += `Amount owed is ${totalAmount()}\n`
-	result += `You earned ${totalFrequentRenterPoints()} frequent renter points\n`
+	function htmlStatement () {
 
-	return result
+		let result = `<h1>Rental Record for <em>${customer.name}</em></h1>\n`
+		result += '<table>\n'
+		for (let r of customer.rentals) {
+			result += `  <tr><td>${movieFor(r).title}</td><td>${amountFor(r)}</td></tr>\n`
+		}
+
+		result += '</table>\n'
+		result += `<p>Amount owed is <em>${totalAmount()}</em></p>\n`
+		result += `<p>You earned <em>${totalFrequentRenterPoints()}</em> frequent renter points</p>\n`
+
+		return result
+    }
 
 	function movieFor (rental) {
 		return movies[rental.movieID]
