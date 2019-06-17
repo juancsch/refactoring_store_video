@@ -1,5 +1,10 @@
 
-module.exports = function statement (customerArg, movies) {
+module.exports = {
+	statement,
+	htmlStatement
+}
+
+function statement (customerArg, movies) {
 
 	const customer = createCustomer(customerArg, movies)
 
@@ -10,6 +15,24 @@ module.exports = function statement (customerArg, movies) {
 
 	result += `Amount owed is ${customer.amount()}\n`
 	result += `You earned ${customer.frequentRenterPoints()} frequent renter points\n`
+
+	return result
+}
+
+function htmlStatement (customerArg, movies) {
+
+	const customer = createCustomer(customerArg, movies)
+
+	let result = `<h1>Rental Record for <em>${customer.name}</em></h1>\n`
+
+	result += '<table>\n'
+	for (let r of customer.rentals()) {
+		result += `  <tr><td>${r.movie().title}</td><td>${r.amount()}</td></tr>\n`
+	}
+
+	result += '</table>\n'
+	result += `<p>Amount owed is <em>${customer.amount()}</em></p>\n`
+	result += `<p>You earned <em>${customer.frequentRenterPoints()}</em> frequent renter points</p>\n`
 
 	return result
 }
