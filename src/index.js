@@ -8,26 +8,36 @@ function statement (customer, movies) {
 
 	let result = `Rental Record for ${customer.name}\n`
 	for (let r of customer.rentals) {
-		result += `\t${movieFor(r, movies).title}\t${amountFor(r, movies)}\n`
+		result += `\t${movie(r).title}\t${rentalAmount(r)}\n`
 	}
 
-	result += `Amount owed is ${totalAmount(customer, movies)}\n`
-	result += `You earned ${totalFrequentRenterPoints(customer, movies)} frequent renter points\n`
+	result += `Amount owed is ${amount()}\n`
+	result += `You earned ${frequentRenterPoints()} frequent renter points\n`
 
 	return result
+
+	function amount () { return totalAmount(customer, movies) }
+	function frequentRenterPoints () { return totalFrequentRenterPoints(customer, movies) }
+	function rentalAmount (aRental) { return amountFor(aRental, movies) }
+	function movie (aRental) { return movieFor(aRental, movies) }
 }
 
 function htmlStatement (customer, movies) {
 
+	const amount = () => totalAmount(customer, movies)
+	const frequentRenterPoints = () => totalFrequentRenterPoints(customer, movies)
+	const movie = (aRental) => movieFor(aRental, movies)
+	const rentalAmount = (aRental) => amountFor(aRental, movies)
+
 	let result = `<h1>Rental Record for <em>${customer.name}</em></h1>\n`
 	result += '<table>\n'
 	for (let r of customer.rentals) {
-		result += `  <tr><td>${movieFor(r, movies).title}</td><td>${amountFor(r, movies)}</td></tr>\n`
+		result += `  <tr><td>${movie(r).title}</td><td>${rentalAmount(r)}</td></tr>\n`
 	}
 
 	result += '</table>\n'
-	result += `<p>Amount owed is <em>${totalAmount(customer, movies)}</em></p>\n`
-	result += `<p>You earned <em>${totalFrequentRenterPoints(customer, movies)}</em> frequent renter points</p>\n`
+	result += `<p>Amount owed is <em>${amount()}</em></p>\n`
+	result += `<p>You earned <em>${frequentRenterPoints()}</em> frequent renter points</p>\n`
 
 	return result
 }
