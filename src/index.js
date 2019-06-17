@@ -1,53 +1,80 @@
 
-module.exports = function statement (customer, movies) {
+module.exports = function statement (customerArg, movies) {
 
-	let result = `Rental Record for ${customer.name}\n`
-	for (let r of customer.rentals) {
-		result += `\t${movieFor(r).title}\t${amountFor(r)}\n`
+	const customer = createCustomer(customerArg, movies)
+
+	let result = `Rental Record for ${customer.name()}\n`
+	for (let r of customer.rentals()) {
+		result += `\t${r.movie().title}\t${r.amount()}\n`
 	}
 
-	result += `Amount owed is ${totalAmount()}\n`
-	result += `You earned ${totalFrequentRenterPoints()} frequent renter points\n`
+	result += `Amount owed is ${customer.amount()}\n`
+	result += `You earned ${customer.frequentRenterPoints()} frequent renter points\n`
 
 	return result
+}
 
-	function movieFor (rental) {
-		return movies[rental.movieID]
+function createCustomer (data, movies) {
+	return {
+		name: () => data.name,
+		rentals: rentals,
+		amount: amount,
+		frequentRenterPoints: frequentRenterPoints
 	}
 
-	function amountFor (rental) {
-		let amount = 0
-		switch (movieFor(rental).code) {
-			case 'regular':
-				amount = 2
-				if (rental.days > 2) {
-					amount += (rental.days - 2) * 1.5
-				}
-				return amount
-			case 'new':
-				return rental.days * 3
-			case 'childrens':
-				amount = 1.5
-				if (rental.days > 3) {
-					amount += (rental.days - 3) * 1.5
-				}
-				return amount
-		}
-		return amount
+	function rentals () {
+		return data.rentals.map(r => createRental(r, movies))
 	}
 
-	function totalAmount () {
-		return customer.rentals
-			.reduce((total, r) => total + amountFor(r), 0)
-	}
-
-	function totalFrequentRenterPoints () {
-		return customer.rentals
-			.map(frequentRenterPointsFor)
+	function frequentRenterPoints () {
+		return rentals()
+			.map((r) => r.frequentRenterPoints())
 			.reduce((a, b) => a + b, 0)
 
-		function frequentRenterPointsFor (rental) {
-			return (movieFor(rental).code === 'new' && rental.days > 2) ? 2 : 1
+	}
+
+	function amount () {
+		return rentals()
+			.reduce((total, r) => total + r.amount(), 0)
+	}
+}
+
+function createRental (data, movies) {
+	return {
+		days: () => data.days,
+		movieID: () => data.movieID,
+		movie: movie,
+		amount: amount,
+		frequentRenterPoints: frequentRenterPoints
+	}
+
+	function movie () {
+		return movies[data.movieID]
+	}
+
+	function amount () {
+		let result = 0
+		switch (movie().code) {
+			case 'regular':
+				result = 2
+				if (data.days > 2) {
+					result += (data.days - 2) * 1.5
+				}
+				return result
+			case 'new':
+				result = data.days * 3
+				return result
+			case 'childrens':
+				result = 1.5
+				if (data.days > 3) {
+					result += (data.days - 3) * 1.5
+				}
+				return result
 		}
+		return result
+	}
+
+	function frequentRenterPoints () {
+		return (movie().code === 'new' && data.days > 2) ? 2 : 1
 	}
 }
