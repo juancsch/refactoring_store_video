@@ -1,13 +1,16 @@
 
 module.exports = function statement (customer, movies, format = 'text') {
 
-	switch (format) {
-		case 'text':
-			return textStatement()
-		case 'html':
-			return htmlStatement()
+	const dispatchTable = {
+		'text': textStatement,
+		'html': htmlStatement
 	}
-	throw new Error(`unknown statement format ${format}`)
+
+	if (undefined === dispatchTable[format]) {
+		throw new Error(`unknown statement format ${format}`)
+	}
+
+	return dispatchTable[format]()
 
 	function textStatement () {
 
@@ -21,20 +24,20 @@ module.exports = function statement (customer, movies, format = 'text') {
 		return result
 	}
 
-    function htmlStatement () {
+	function htmlStatement () {
 
-        let result = `<h1>Rental Record for <em>${customer.name}</em></h1>\n`
-        result += '<table>\n'
-        for (let r of customer.rentals) {
-            result += `  <tr><td>${movieFor(r).title}</td><td>${amountFor(r)}</td></tr>\n`
-        }
+		let result = `<h1>Rental Record for <em>${customer.name}</em></h1>\n`
+		result += '<table>\n'
+		for (let r of customer.rentals) {
+			result += `  <tr><td>${movieFor(r).title}</td><td>${amountFor(r)}</td></tr>\n`
+		}
 
-        result += '</table>\n'
-        result += `<p>Amount owed is <em>${totalAmount()}</em></p>\n`
-        result += `<p>You earned <em>${totalFrequentRenterPoints()}</em> frequent renter points</p>\n`
+		result += '</table>\n'
+		result += `<p>Amount owed is <em>${totalAmount()}</em></p>\n`
+		result += `<p>You earned <em>${totalFrequentRenterPoints()}</em> frequent renter points</p>\n`
 
-        return result
-    }
+		return result
+	}
 
 	function movieFor (rental) {
 		return movies[rental.movieID]

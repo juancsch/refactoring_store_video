@@ -1,4 +1,4 @@
-var videoStore = require('../src')
+const videoStore = require('../src')
 
 const custumer = {
 	'name': 'martin',
