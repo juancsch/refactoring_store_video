@@ -1,45 +1,53 @@
 
 module.exports = function statement (customer, movies) {
 
-	let totalAmount = 0
-    let frequentRenterPoints = 0
-    let result = `Rental Record for ${customer.name}\n`
-
+	let result = `Rental Record for ${customer.name}\n`
 	for (let r of customer.rentals) {
-		let movie = movies[r.movieID]
-		let thisAmount = 0
+		result += `\t${movieFor(r).title}\t${amountFor(r)}\n`
+	}
 
-		// determine amount for each movie
-		switch (movie.code) {
-		case 'regular':
-			thisAmount = 2
-			if (r.days > 2) {
-				thisAmount += (r.days - 2) * 1.5
-			}
-			break
-		case 'new':
-			thisAmount = r.days * 3
-			break
-		case 'childrens':
-			thisAmount = 1.5
-			if (r.days > 3) {
-				thisAmount += (r.days - 3) * 1.5
-			}
-			break
+	result += `Amount owed is ${totalAmount()}\n`
+	result += `You earned ${totalFrequentRenterPoints()} frequent renter points\n`
+
+	return result
+
+	function movieFor (rental) {
+		return movies[rental.movieID]
+	}
+
+	function amountFor (rental) {
+		let amount = 0
+		switch (movieFor(rental).code) {
+			case 'regular':
+				amount = 2
+				if (rental.days > 2) {
+					amount += (rental.days - 2) * 1.5
+				}
+				return amount
+			case 'new':
+				return rental.days * 3
+			case 'childrens':
+				amount = 1.5
+				if (rental.days > 3) {
+					amount += (rental.days - 3) * 1.5
+				}
+				return amount
 		}
+		return amount
+	}
 
-		// add frequent renter points
-		frequentRenterPoints++
-		// add bonus for a two day new release rental
-		if (movie.code === 'new' && r.days > 2) frequentRenterPoints++
+	function totalAmount () {
+		return customer.rentals
+			.reduce((total, r) => total + amountFor(r), 0)
+	}
 
-		// print figures for this rental
-		result += `\t${movie.title}\t${thisAmount}\n`
-		totalAmount += thisAmount
-    }
-    // add footer lines
-    result += `Amount owed is ${totalAmount}\n`
-    result += `You earned ${frequentRenterPoints} frequent renter points\n`
+	function totalFrequentRenterPoints () {
+		return customer.rentals
+			.map(frequentRenterPointsFor)
+			.reduce((a, b) => a + b, 0)
 
-    return result
+		function frequentRenterPointsFor (rental) {
+			return (movieFor(rental).code === 'new' && rental.days > 2) ? 2 : 1
+		}
+	}
 }
