@@ -4,8 +4,6 @@ module.exports = function statement (customer, movies, format = 'text') {
 	switch (format) {
 		case 'text':
 			return textStatement()
-		case 'html':
-			return htmlStatement()
 	}
 	throw new Error(`unknown statement format ${format}`)
 
@@ -20,21 +18,6 @@ module.exports = function statement (customer, movies, format = 'text') {
 		result += `You earned ${totalFrequentRenterPoints()} frequent renter points\n`
 		return result
 	}
-
-	function htmlStatement () {
-
-		let result = `<h1>Rental Record for <em>${customer.name}</em></h1>\n`
-		result += '<table>\n'
-		for (let r of customer.rentals) {
-			result += `  <tr><td>${movieFor(r).title}</td><td>${amountFor(r)}</td></tr>\n`
-		}
-
-		result += '</table>\n'
-		result += `<p>Amount owed is <em>${totalAmount()}</em></p>\n`
-		result += `<p>You earned <em>${totalFrequentRenterPoints()}</em> frequent renter points</p>\n`
-
-		return result
-    }
 
 	function movieFor (rental) {
 		return movies[rental.movieID]
