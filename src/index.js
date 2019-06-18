@@ -1,15 +1,32 @@
 
 module.exports = function statement (customer, movies) {
 
+	const data = createStatementData(customer, movies)
+
 	let result = `Rental Record for ${customer.name}\n`
-	for (let r of customer.rentals) {
-		result += `\t${movieFor(r).title}\t${amountFor(r)}\n`
+	for (let r of data.rentals) {
+		result += `\t${r.title}\t${r.amount}\n`
 	}
 
-	result += `Amount owed is ${totalAmount()}\n`
-	result += `You earned ${totalFrequentRenterPoints()} frequent renter points\n`
+	result += `Amount owed is ${data.totalAmount}\n`
+	result += `You earned ${data.totalFrequentRenterPoints} frequent renter points\n`
 
 	return result
+
+	function createStatementData (customer, movies) {
+		let result = Object.assign({}, customer)
+		result.rentals = customer.rentals.map(r => createRentalData(r))
+		result.totalAmount = totalAmount()
+		result.totalFrequentRenterPoints = totalFrequentRenterPoints()
+		return result
+
+		function createRentalData (rental) {
+			let result = Object.assign({}, rental)
+			result.title = movieFor(rental)
+			result.amount = amountFor(rental)
+			return result
+		}
+    }
 
 	function movieFor (rental) {
 		return movies[rental.movieID]
