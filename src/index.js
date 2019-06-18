@@ -12,21 +12,22 @@ module.exports = function statement (customer, movies) {
 	result += `You earned ${data.totalFrequentRenterPoints} frequent renter points\n`
 
 	return result
+}
 
-	function createStatementData (customer, movies) {
-		let result = Object.assign({}, customer)
-		result.rentals = customer.rentals.map(r => createRentalData(r))
-		result.totalAmount = totalAmount()
-		result.totalFrequentRenterPoints = totalFrequentRenterPoints()
+function createStatementData (customer, movies) {
+
+	let result = Object.assign({}, customer)
+	result.rentals = customer.rentals.map(r => createRentalData(r))
+	result.totalAmount = totalAmount()
+	result.totalFrequentRenterPoints = totalFrequentRenterPoints()
+	return result
+
+	function createRentalData (rental) {
+		let result = Object.assign({}, rental)
+		result.title = movieFor(rental)
+		result.amount = amountFor(rental)
 		return result
-
-		function createRentalData (rental) {
-			let result = Object.assign({}, rental)
-			result.title = movieFor(rental)
-			result.amount = amountFor(rental)
-			return result
-		}
-    }
+	}
 
 	function movieFor (rental) {
 		return movies[rental.movieID]
