@@ -1,4 +1,4 @@
-var videoStore = require('../src')
+const videoStore = require('../src')
 
 const custumer = {
 	'name': 'martin',
@@ -14,5 +14,5 @@ const movies = {
 }
 
 console.log(
-	videoStore(custumer, movies)
+	videoStore.statement(custumer, movies)
 )
